@@ -30,7 +30,42 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 # Your goal is to write the score method.
 
 def score(dice)
-  # You need to write this method
+
+  if dice == []
+    return 0
+  end
+
+  sum = 0
+
+  # Source: http://stackoverflow.com/questions/3852755/ruby-array-subtraction-without-removing-items-more-than-once
+  def subtract_once(b)
+    h = b.inject({}) {|memo, v|
+      memo[v] ||= 0; memo[v] += 1; memo
+    }
+    reject { |e| h.include?(e) && (h[e] -= 1) >= 0 }
+  end
+
+  if dice.size > 2
+    # Returns dice value if it occurs more than 2 times
+    arr = dice.select {|e| dice.count(e) > 2}
+    if arr.any?
+      dice = dice.subtract_once(arr[0..2])
+      arr[0] == 1 ? sum += 1000 : sum += arr[0] * 100
+    end
+  end
+
+  for num in dice do
+    sum += case num
+      when 1
+        100
+      when 5
+        50
+      else
+        0
+    end
+  end
+
+  return sum
 end
 
 class AboutScoringProject < Neo::Koan
